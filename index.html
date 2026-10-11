@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ef">
 
   <title>SideTable06 — Design Manual</title>
 
@@ -17,8 +18,14 @@
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
       background: #f5f3ef;
       color: #242424;
       font-family: 'Manrope', sans-serif;
@@ -26,24 +33,29 @@
 
     header {
       text-align: center;
-      padding: 20px 16px 12px;
+      padding: 14px 16px 4px;
     }
 
     header h1 {
+      font-family: 'Manrope', sans-serif;
       font-size: 18px;
+      line-height: 1.4;
       font-weight: 500;
       margin: 0;
     }
 
     header p {
+      font-family: 'Manrope', sans-serif;
       font-size: 12px;
+      line-height: 1.5;
+      font-weight: 400;
       color: #777;
-      margin: 6px 0 0;
+      margin: 4px 0 0;
     }
 
-    /* Space around the book prevents shadows being clipped */
     main {
-      padding: 36px 32px 44px;
+      width: 100%;
+      padding: 12px 32px 34px;
       overflow: visible;
     }
 
@@ -65,22 +77,25 @@
       text-align: center;
       color: #777;
       font-size: 14px;
+      font-family: 'Manrope', sans-serif;
     }
 
     footer {
       text-align: center;
-      padding: 12px 16px 20px;
+      padding: 8px 16px 18px;
       color: #888;
+      font-family: 'Manrope', sans-serif;
       font-size: 11px;
+      line-height: 1.5;
     }
 
     @media (max-width: 600px) {
       header {
-        padding-top: 14px;
+        padding: 12px 12px 4px;
       }
 
       main {
-        padding: 24px 12px 36px;
+        padding: 12px 12px 28px;
       }
 
       #book {
@@ -107,6 +122,7 @@
   </footer>
 
   <script src="./pdflipbook.js"></script>
+
   <script>
     const bookElement = document.getElementById("book");
     const statusElement = document.getElementById("status");
@@ -119,6 +135,7 @@
       statusElement.style.display = "block";
       statusElement.textContent =
         "Could not load the PDF. Please refresh and try again.";
+
       console.error("Flipbook PDF error:", event.detail);
     });
 
@@ -134,6 +151,7 @@
     } catch (error) {
       statusElement.textContent =
         "Viewer failed to start. Check the browser console.";
+
       console.error("Flipbook initialization error:", error);
     }
   </script>
