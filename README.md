@@ -1,0 +1,1 @@
+# SideTable06_DesignMannual
