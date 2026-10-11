@@ -1,58 +1,67 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f5f3ef">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>SideTable06 — Design Manual</title>
 
-  <!-- Manrope font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --page-bg: #f5f3ef;
+      --text: #292824;
+      --muted: #77736d;
+    }
+
     * {
       box-sizing: border-box;
     }
 
-    html,
-    body {
-      margin: 0;
-      width: 100%;
+    html {
       min-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     body {
-      background: #f5f3ef;
-      color: #242424;
-      font-family: 'Manrope', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      padding: 30px 24px 20px;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: "Manrope", sans-serif;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
     header {
       text-align: center;
-      padding: 14px 16px 4px;
+      margin: 0 0 8px;
     }
 
-    header h1 {
-      font-size: 18px;
-      line-height: 1.4;
-      font-weight: 500;
+    h1 {
+      font-size: 25px;
+      line-height: 1.25;
+      font-weight: 600;
+      letter-spacing: -0.8px;
       margin: 0;
     }
 
-    header p {
+    .subtitle {
       font-size: 12px;
-      line-height: 1.5;
-      color: #777;
-      margin: 4px 0 0;
+      color: var(--muted);
+      margin-top: 3px;
     }
 
     main {
       width: 100%;
-      padding: 12px 32px 12px;
+      max-width: 1200px;
+      margin: 0 auto;
       overflow: visible;
     }
 
@@ -60,46 +69,49 @@
       width: 100%;
       height: 76vh;
       min-height: 480px;
+      max-height: 900px;
       overflow: visible;
 
       --fb-bg: transparent;
-      --fb-paper: #fff;
-      --fb-control-bg: rgba(30, 30, 30, 0.82);
-      --fb-control-fg: #fff;
-      --fb-counter-fg: #fff;
+      --fb-paper: #ffffff;
+      --fb-control-bg: rgba(35, 34, 31, 0.88);
+      --fb-control-fg: #ffffff;
+      --fb-counter-fg: #ffffff;
     }
 
     #status {
-      padding: 20px;
       text-align: center;
-      color: #777;
-      font-size: 14px;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 20px 0;
     }
 
     #page-counter {
       min-height: 30px;
       padding: 8px 0 4px;
       text-align: center;
-      font-family: 'Manrope', sans-serif;
       font-size: 12px;
-      color: #777;
+      color: var(--muted);
+    }
+
+    #page-counter[hidden] {
+      display: none;
     }
 
     footer {
       text-align: center;
-      padding: 4px 16px 18px;
-      color: #888;
-      font-size: 11px;
-      line-height: 1.5;
+      font-size: 10px;
+      color: #96918a;
+      margin-top: 4px;
     }
 
     @media (max-width: 600px) {
-      header {
-        padding: 12px 12px 4px;
+      body {
+        padding: 18px 10px 14px;
       }
 
-      main {
-        padding: 12px 12px 8px;
+      h1 {
+        font-size: 21px;
       }
 
       #book {
@@ -113,7 +125,7 @@
 <body>
   <header>
     <h1>SideTable06</h1>
-    <p>Design Manual</p>
+    <div class="subtitle">Design Manual</div>
   </header>
 
   <main>
@@ -123,7 +135,7 @@
   </main>
 
   <footer>
-    Drag a page corner or use the arrows to turn pages.
+    SideTable06 · Design Manual
   </footer>
 
   <script src="./pdflipbook.js"></script>
@@ -133,48 +145,89 @@
     const statusElement = document.getElementById("status");
     const pageCounter = document.getElementById("page-counter");
 
+    let flipbook = null;
     let totalPages = 0;
+    let lastWheelTime = 0;
 
+    // Update the external page counter.
+    function updateCounter(page, pages) {
+      if (pages) totalPages = pages;
+
+      if (totalPages > 0) {
+        pageCounter.hidden = false;
+        pageCounter.textContent =
+          "Page " + page + " of " + totalPages;
+      }
+    }
+
+    // PDF loaded successfully.
     bookElement.addEventListener("flipbook:ready", function (event) {
       statusElement.style.display = "none";
-
-      totalPages = event.detail.pages;
-      pageCounter.hidden = false;
-      pageCounter.textContent = "Page 1 of " + totalPages;
+      totalPages = event.detail.pages || 0;
+      updateCounter(1, totalPages);
     });
 
+    // Update the counter after page turns.
     bookElement.addEventListener("flipbook:pagechange", function (event) {
-      const currentPage = event.detail.page;
-      totalPages = event.detail.pages;
-
-      pageCounter.textContent =
-        "Page " + currentPage + " of " + totalPages;
+      updateCounter(event.detail.page, event.detail.pages);
     });
 
+    // Display useful information if the PDF fails to load.
     bookElement.addEventListener("flipbook:error", function (event) {
       statusElement.style.display = "block";
       statusElement.textContent =
-        "Could not load the PDF. Please refresh and try again.";
-
-      console.error("Flipbook PDF error:", event.detail);
+        "Unable to load the PDF. Please refresh the page.";
+      console.error("PDFlipbook error:", event.detail.error);
     });
 
-    try {
-      PDFlipbook.create(bookElement, {
+    // Create the flipbook.
+    if (typeof PDFlipbook !== "undefined") {
+      flipbook = PDFlipbook.create(bookElement, {
         url: "./SideTable06_DesignManual.pdf",
         displayMode: "auto",
         arrows: true,
         pageNumbers: false,
         controls: true,
         shadow: "always",
-        padding: 24
+        padding: 16
       });
-    } catch (error) {
+    } else {
       statusElement.textContent =
-        "Viewer failed to start. Check the browser console.";
-
-      console.error("Flipbook initialization error:", error);
+        "Flipbook library not found. Check pdflipbook.js.";
     }
+
+    /*
+      Mouse-wheel navigation:
+      - Scroll down = next page
+      - Scroll up = previous page
+      - Small cooldown prevents rapid accidental page turns
+      - Ctrl + wheel remains available for browser zoom
+    */
+    bookElement.addEventListener("wheel", function (event) {
+      if (!flipbook || event.ctrlKey) return;
+
+      // Ignore tiny trackpad movements.
+      if (Math.abs(event.deltaY) < 15) return;
+
+      // Don't change pages while the user is zoomed in.
+      // Normal page navigation remains available through arrows and dragging.
+      const now = Date.now();
+
+      if (now - lastWheelTime < 650) {
+        event.preventDefault();
+        return;
+      }
+
+      event.preventDefault();
+      lastWheelTime = now;
+
+      if (event.deltaY > 0) {
+        flipbook.next();
+      } else {
+        flipbook.prev();
+      }
+    }, { passive: false });
   </script>
 </body>
 </html>
+```
