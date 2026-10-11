@@ -37,7 +37,6 @@
     }
 
     header h1 {
-      font-family: 'Manrope', sans-serif;
       font-size: 18px;
       line-height: 1.4;
       font-weight: 500;
@@ -45,17 +44,15 @@
     }
 
     header p {
-      font-family: 'Manrope', sans-serif;
       font-size: 12px;
       line-height: 1.5;
-      font-weight: 400;
       color: #777;
       margin: 4px 0 0;
     }
 
     main {
       width: 100%;
-      padding: 12px 32px 34px;
+      padding: 12px 32px 12px;
       overflow: visible;
     }
 
@@ -77,14 +74,21 @@
       text-align: center;
       color: #777;
       font-size: 14px;
+    }
+
+    #page-counter {
+      min-height: 30px;
+      padding: 8px 0 4px;
+      text-align: center;
       font-family: 'Manrope', sans-serif;
+      font-size: 12px;
+      color: #777;
     }
 
     footer {
       text-align: center;
-      padding: 8px 16px 18px;
+      padding: 4px 16px 18px;
       color: #888;
-      font-family: 'Manrope', sans-serif;
       font-size: 11px;
       line-height: 1.5;
     }
@@ -95,7 +99,7 @@
       }
 
       main {
-        padding: 12px 12px 28px;
+        padding: 12px 12px 8px;
       }
 
       #book {
@@ -115,6 +119,7 @@
   <main>
     <div id="status">Loading design manual...</div>
     <div id="book"></div>
+    <div id="page-counter" hidden></div>
   </main>
 
   <footer>
@@ -126,9 +131,24 @@
   <script>
     const bookElement = document.getElementById("book");
     const statusElement = document.getElementById("status");
+    const pageCounter = document.getElementById("page-counter");
 
-    bookElement.addEventListener("flipbook:ready", function () {
+    let totalPages = 0;
+
+    bookElement.addEventListener("flipbook:ready", function (event) {
       statusElement.style.display = "none";
+
+      totalPages = event.detail.pages;
+      pageCounter.hidden = false;
+      pageCounter.textContent = "Page 1 of " + totalPages;
+    });
+
+    bookElement.addEventListener("flipbook:pagechange", function (event) {
+      const currentPage = event.detail.page;
+      totalPages = event.detail.pages;
+
+      pageCounter.textContent =
+        "Page " + currentPage + " of " + totalPages;
     });
 
     bookElement.addEventListener("flipbook:error", function (event) {
@@ -144,9 +164,10 @@
         url: "./SideTable06_DesignManual.pdf",
         displayMode: "auto",
         arrows: true,
-        pageNumbers: true,
+        pageNumbers: false,
         controls: true,
-        shadow: "always"
+        shadow: "always",
+        padding: 24
       });
     } catch (error) {
       statusElement.textContent =
