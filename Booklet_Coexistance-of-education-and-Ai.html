@@ -1,0 +1,247 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Coexistence of Education & AI</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --page-bg: #f5f3ef;
+      --text: #292824;
+      --muted: #77736d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 30px 24px 20px;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: "Manrope", sans-serif;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    header {
+      text-align: center;
+      margin: 0 0 8px;
+    }
+
+    h1 {
+      font-size: 25px;
+      line-height: 1.3;
+      font-weight: 600;
+      letter-spacing: -0.8px;
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 16px 0 10px;
+      font-size: 12px;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      padding-bottom: 3px;
+      border-bottom: 1px solid transparent;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--text);
+      border-bottom-color: var(--text);
+    }
+
+    main {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      overflow: visible;
+    }
+
+    #book {
+      width: 100%;
+      height: 76vh;
+      min-height: 480px;
+      max-height: 900px;
+      overflow: visible;
+
+      --fb-bg: transparent;
+      --fb-paper: #ffffff;
+      --fb-control-bg: rgba(35, 34, 31, 0.88);
+      --fb-control-fg: #ffffff;
+      --fb-counter-fg: #ffffff;
+    }
+
+    #status {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 20px 0;
+    }
+
+    #page-counter {
+      min-height: 30px;
+      padding: 8px 0 4px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    #page-counter[hidden] {
+      display: none;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 10px;
+      color: #96918a;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 18px 10px 14px;
+      }
+
+      h1 {
+        font-size: 21px;
+      }
+
+      #book {
+        height: 70vh;
+        min-height: 400px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Coexistence of Education & AI</h1>
+    <div class="subtitle">Booklet</div>
+  </header>
+
+  <nav>
+    <a href="./index.html">SideTable06 Manual</a>
+    <a href="./Booklet_Coexistance-of-education-and-Ai.html" class="active">
+      Education & AI
+    </a>
+  </nav>
+
+  <main>
+    <div id="status">Loading booklet...</div>
+    <div id="book"></div>
+    <div id="page-counter" hidden></div>
+  </main>
+
+  <footer>
+    Coexistence of Education & AI · Booklet
+  </footer>
+
+  <script src="./pdflipbook.js"></script>
+
+  <script>
+    const bookElement = document.getElementById("book");
+    const statusElement = document.getElementById("status");
+    const pageCounter = document.getElementById("page-counter");
+
+    let flipbook = null;
+    let totalPages = 0;
+    let lastWheelTime = 0;
+
+    function updateCounter(page, pages) {
+      if (pages) totalPages = pages;
+
+      if (totalPages > 0) {
+        pageCounter.hidden = false;
+        pageCounter.textContent =
+          "Page " + page + " of " + totalPages;
+      }
+    }
+
+    bookElement.addEventListener("flipbook:ready", function (event) {
+      statusElement.style.display = "none";
+      totalPages = event.detail.pages || 0;
+      updateCounter(1, totalPages);
+    });
+
+    bookElement.addEventListener("flipbook:pagechange", function (event) {
+      updateCounter(event.detail.page, event.detail.pages);
+    });
+
+    bookElement.addEventListener("flipbook:error", function (event) {
+      statusElement.style.display = "block";
+      statusElement.textContent =
+        "Unable to load the booklet. Check the PDF filename.";
+      console.error("PDFlipbook error:", event.detail.error);
+    });
+
+    if (typeof PDFlipbook !== "undefined") {
+      flipbook = PDFlipbook.create(bookElement, {
+        url: "./Booklet_Coexistance%20of%20education%20%26%20Ai.pdf",
+        displayMode: "auto",
+        arrows: true,
+        pageNumbers: false,
+        controls: true,
+        shadow: "always",
+        padding: 16
+      });
+    } else {
+      statusElement.textContent =
+        "Flipbook library not found. Check pdflipbook.js.";
+    }
+
+    // Scroll down to turn forward; scroll up to turn backward.
+    bookElement.addEventListener("wheel", function (event) {
+      if (!flipbook || event.ctrlKey) return;
+      if (Math.abs(event.deltaY) < 15) return;
+
+      const now = Date.now();
+
+      if (now - lastWheelTime < 650) {
+        event.preventDefault();
+        return;
+      }
+
+      event.preventDefault();
+      lastWheelTime = now;
+
+      if (event.deltaY > 0) {
+        flipbook.next();
+      } else {
+        flipbook.prev();
+      }
+    }, { passive: false });
+  </script>
+</body>
+</html>
+```
