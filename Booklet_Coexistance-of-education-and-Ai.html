@@ -57,28 +57,6 @@
       margin-top: 3px;
     }
 
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin: 16px 0 10px;
-      font-size: 12px;
-    }
-
-    nav a {
-      color: var(--muted);
-      text-decoration: none;
-      padding-bottom: 3px;
-      border-bottom: 1px solid transparent;
-    }
-
-    nav a:hover,
-    nav a.active {
-      color: var(--text);
-      border-bottom-color: var(--text);
-    }
-
     main {
       width: 100%;
       max-width: 1200px;
@@ -144,7 +122,7 @@
 </head>
 
 <body>
-   <header>
+  <header>
     <h1>Coexistence of Education & AI</h1>
     <div class="subtitle">Booklet</div>
   </header>
@@ -158,6 +136,7 @@
   <footer>
     Coexistence of Education & AI · Booklet
   </footer>
+
   <script src="./pdflipbook.js"></script>
 
   <script>
@@ -170,7 +149,9 @@
     let lastWheelTime = 0;
 
     function updateCounter(page, pages) {
-      if (pages) totalPages = pages;
+      if (pages) {
+        totalPages = pages;
+      }
 
       if (totalPages > 0) {
         pageCounter.hidden = false;
@@ -192,7 +173,7 @@
     bookElement.addEventListener("flipbook:error", function (event) {
       statusElement.style.display = "block";
       statusElement.textContent =
-        "Unable to load the booklet. Check the PDF filename.";
+        "Unable to load the booklet. Please check the PDF filename.";
       console.error("PDFlipbook error:", event.detail.error);
     });
 
@@ -211,10 +192,15 @@
         "Flipbook library not found. Check pdflipbook.js.";
     }
 
-    // Scroll down to turn forward; scroll up to turn backward.
+    // Scroll down for the next page and up for the previous page.
     bookElement.addEventListener("wheel", function (event) {
-      if (!flipbook || event.ctrlKey) return;
-      if (Math.abs(event.deltaY) < 15) return;
+      if (!flipbook || event.ctrlKey) {
+        return;
+      }
+
+      if (Math.abs(event.deltaY) < 15) {
+        return;
+      }
 
       const now = Date.now();
 
@@ -235,4 +221,3 @@
   </script>
 </body>
 </html>
-```
